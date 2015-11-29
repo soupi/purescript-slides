@@ -1,6 +1,6 @@
 module Test.Main where
 
-import Prelude (map, ($))
+import Prelude (map, ($), (<>))
 import Slides
 
 main = runSlides slides
@@ -13,6 +13,12 @@ s1 = slide "Slides" $
   valign
     [ image "http://i.imgur.com/Hm9pTxy.gif"
     , title "Let's build a presentation!"
+    , center $
+        text "(In "
+        <+> link "http://purescript.org" (text "PureScript")
+        <>  text ", Using "
+        <+> link "https://github.com/soupi/ps-slides" (text "ps-slides")
+        <>  text ")"
     ]
 
 s2 = slide "Primitives" $
@@ -22,14 +28,17 @@ s2 = slide "Primitives" $
         [ text "text: write a block of text"
         , text "image: display an image from a url"
         , text "title: a title"
+        , text "link: turn an element into a clickable link"
+        , text "center: center an element"
         ]
     ]
 
 s3 = slide "Combinators" $
   valign
-    [ text "in order to combine elements, we can use the following combinators:"
-    , ulist
-        [ text "valign: vertically align elements in a list"
+    [ text "To combine elements, we can use the following combinators:"
+    , center $ ulist
+        [ text "group: group an array of elements"
+        , text "valign: vertically align elements in a list"
         , text "halign: horizontally align elements in a list"
         , text "ulist: create a list of bullets"
         ]
@@ -43,6 +52,9 @@ s4 = slide "Creating slides" $
   ]
 
 s5 = slide "That's it!" $
-  text "This library is still tiny and may grow in the future :)"
+  valign
+    [ text "This library is still tiny and may grow in the future :)"
+    , center $ text "Interested? Check the source on" <+> link "https://github.com/soupi/ps-slides" (text "Github") <> text "!"
+    ]
 
 

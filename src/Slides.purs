@@ -6,14 +6,18 @@ module Slides
   , Slides()
   , Slide()
   , Element()
+  , (<+>)
   , slide
   , empty
   , title
   , text
   , image
+  , link
   , valign
   , halign
   , ulist
+  , group
+  , center
   ) where
 
 import Data.Maybe (Maybe(..))
@@ -21,7 +25,7 @@ import Prelude
 import Data.Lens
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
-import Data.Array
+import Data.Array hiding (group)
 import Data.Foldable (mconcat, intercalate)
 import OpticUI.Markup.HTML as Html
 import OpticUI.Markup as Html
@@ -67,24 +71,43 @@ data Element
   | Title  String
   | Text   String
   | Image  String
+  | Link   String Element
   | HAlign (Array Element)
   | VAlign (Array Element)
   | UList  (Array Element)
+  | Group  (Array Element)
+  | Style String Element
+
+instance semigroupElement :: Semigroup Element where
+  append e1 e2 = Group [e1, e2]
+
+infixr 5 <+>
+(<+>) :: Element -> Element -> Element
+(<+>) e1 e2 = e1 <> Style "padding: 8px;" Empty <> e2
 
 -- | A Show instance for testing
 instance showElement :: Show Element where
   show x =
     case x of
       Text  str -> "Text " <> str
+      Link  l e -> "Link " <> l <> " (" <> show e <> ")"
       Title str -> "Title " <> str
       Image str -> "Image " <> str
       UList  xs -> "UList [" <> intercalate ", " (map show xs) <> "]"
       HAlign xs -> "HAlign [" <> intercalate ", " (map show xs) <> "]"
       VAlign xs -> "VAlign [" <> intercalate ", " (map show xs) <> "]"
+      Group  els -> "Group " <> show (map show els)
+      Style style e -> "Style " <> show style
 
 mkSlides :: Array Slide -> Slides
 mkSlides [] = Slides { pos : 0, slides : [empty] }
 mkSlides sl = Slides { pos : 0, slides : sl }
+
+center :: Element -> Element
+center = Style "display: flex; margin: auto; justify-content: center;"
+
+group :: Array Element -> Element
+group = Group
 
 empty :: Slide
 empty = Slide Empty
@@ -94,6 +117,9 @@ slide ttl el = Slide (valign [title ttl, el])
 
 title :: String -> Element
 title ttl = halign [valign [text ""], Title ttl, valign [text ""]]
+
+link :: String -> Element -> Element
+link = Link
 
 text :: String -> Element
 text = Text
@@ -124,6 +150,9 @@ renderE element =
     Title tl ->
       Html.span [Html.attr "style" "text-align: center; display: inline-block; margin: auto;"] (Html.h2_ (Html.text tl))
 
+    Link l el ->
+      Html.a [Html.attr "href" l] (renderE el)
+
     Text str ->
       Html.p marwidStyle (Html.text str)
 
@@ -138,6 +167,12 @@ renderE element =
 
     UList els ->
       Html.span [] (Html.ul_ $ mconcat $ map (Html.li_ <<< renderE) els)
+
+    Group els ->
+      Html.span [] $ mconcat $ map renderE els
+
+    Style style e ->
+      Html.span [Html.attr "style" style] (renderE e)
 
 marwidStyle =
     [ Html.attr "style" "display: inline-block; margin: auto;" ]
