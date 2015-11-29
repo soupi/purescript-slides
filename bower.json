@@ -1,0 +1,29 @@
+{
+  "name": "ps-slides",
+  "authors": [
+    "Gil Mizrahi <soupiral@gmail.com>"
+  ],
+  "license": "BSD3",
+  "version": "0.1.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "output"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/soupi/ps-slides"
+  },
+  "dependencies": {
+    "purescript-foldable-traversable": "~0.4.1",
+    "purescript-generics": "~0.7.0",
+    "purescript-lists": "~0.7.7",
+    "purescript-maybe": "~0.3.4",
+    "purescript-optic-ui": "*",
+    "purescript-prelude": "~0.1.2",
+    "virtual-dom": "~2.1.1"
+  }
+}
