@@ -29,7 +29,7 @@ import OpticUI as UI
 
 
 -- | A component for a presentation
-runSlides slides = UI.animate slides $ UI.with \state h ->
+runSlides (Slides slides) = UI.animate slides $ UI.with \state h ->
   let clicked action = const $ UI.runHandler h $ state # moveSlides action
   in mconcat $ UI.ui <$>
        [ Html.button [Html.titleA "Back", Html.onClick $ clicked Back] $ Html.text "Back"
@@ -37,8 +37,9 @@ runSlides slides = UI.animate slides $ UI.with \state h ->
        , render $ fromMaybe empty (state.slides !! state.pos)
        ]
 
+data Slides = Slides SlidesInternal
 
-type Slides
+type SlidesInternal
   = { pos :: Int
     , slides :: Array Slide
     }
@@ -47,7 +48,7 @@ data Move
   = Back
   | Next
 
-moveSlides :: Move -> Slides -> Slides
+moveSlides :: Move -> SlidesInternal -> SlidesInternal
 moveSlides Back s =
   if s.pos - 1 < 0
   then s
@@ -82,8 +83,8 @@ instance showElement :: Show Element where
       VAlign xs -> "VAlign [" <> intercalate ", " (map show xs) <> "]"
 
 mkSlides :: Array Slide -> Slides
-mkSlides [] = { pos : 0, slides : [empty] }
-mkSlides sl = { pos : 0, slides : sl }
+mkSlides [] = Slides { pos : 0, slides : [empty] }
+mkSlides sl = Slides { pos : 0, slides : sl }
 
 empty :: Slide
 empty = Slide Empty
