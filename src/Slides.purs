@@ -32,7 +32,7 @@ import OpticUI.Markup as Html
 import OpticUI as UI
 
 
--- | A component for a presentation
+-- | run a component for a presentation
 runSlides (Slides slides) = UI.animate slides $ UI.with \state h ->
   let clicked action = const $ UI.runHandler h $ state # moveSlides action
   in mconcat $ UI.ui <$>
@@ -41,6 +41,7 @@ runSlides (Slides slides) = UI.animate slides $ UI.with \state h ->
        , render $ fromMaybe empty (state.slides !! state.pos)
        ]
 
+-- | Slides state for a component
 data Slides = Slides SlidesInternal
 
 type SlidesInternal
@@ -66,6 +67,7 @@ moveSlides Next s =
 data Slide
   = Slide Element
 
+-- | A data type defining the AST
 data Element
   = Empty
   | Title  String
@@ -82,6 +84,8 @@ instance semigroupElement :: Semigroup Element where
   append e1 e2 = Group [e1, e2]
 
 infixr 5 <+>
+
+-- | Append two elements with some padding in between
 (<+>) :: Element -> Element -> Element
 (<+>) e1 e2 = e1 <> Style "padding: 8px;" Empty <> e2
 
@@ -99,40 +103,53 @@ instance showElement :: Show Element where
       Group  els -> "Group " <> show (map show els)
       Style style e -> "Style " <> show style
 
+-- | Create slides component from an array of slides
 mkSlides :: Array Slide -> Slides
 mkSlides [] = Slides { pos : 0, slides : [empty] }
 mkSlides sl = Slides { pos : 0, slides : sl }
 
+
+-- | Position an element at the center of its parent
 center :: Element -> Element
 center = Style "display: flex; margin: auto; justify-content: center;"
 
+-- | Group elements as a unit
 group :: Array Element -> Element
 group = Group
 
+-- | An empty slide
 empty :: Slide
 empty = Slide Empty
 
+-- | Create a slide from a title and an element
 slide :: String -> Element -> Slide
 slide ttl el = Slide (valign [title ttl, el])
 
+-- | A title
 title :: String -> Element
 title ttl = halign [valign [text ""], Title ttl, valign [text ""]]
 
+-- | Turn an element into a link to url
 link :: String -> Element -> Element
 link = Link
 
+-- | A text element
 text :: String -> Element
 text = Text
 
+-- | An image element
 image :: String -> Element
 image = Image
 
+-- | An unordered list of element from an array of elements
 ulist :: Array Element -> Element
 ulist = UList
 
+-- | Horizontally align elements in array
 halign :: Array Element -> Element
 halign = HAlign
 
+-- | Vertically align elements in array
 valign :: Array Element -> Element
 valign = VAlign
 
