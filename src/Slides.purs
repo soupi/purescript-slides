@@ -93,15 +93,15 @@ infixr 5 <+>
 instance showElement :: Show Element where
   show x =
     case x of
-      Text  str -> "Text " <> str
+      Text  str -> "Text " <> show str
       Link  l e -> "Link " <> l <> " (" <> show e <> ")"
-      Title str -> "Title " <> str
-      Image str -> "Image " <> str
-      UList  xs -> "UList [" <> intercalate ", " (map show xs) <> "]"
+      Title str -> "Title " <> show str
+      Image str -> "Image " <> show str
+      UList  xs -> "UList ["  <> intercalate ", " (map show xs) <> "]"
       HAlign xs -> "HAlign [" <> intercalate ", " (map show xs) <> "]"
       VAlign xs -> "VAlign [" <> intercalate ", " (map show xs) <> "]"
-      Group  els -> "Group " <> show (map show els)
-      Style style e -> "Style " <> show style
+      Group  xs -> "Group ["  <> intercalate ", " (map show xs) <> "]"
+      Style s e -> "Style " <> show s <> " (" <> show e <> ")"
 
 -- | Create slides component from an array of slides
 mkSlides :: Array Slide -> Slides
