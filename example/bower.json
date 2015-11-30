@@ -1,0 +1,21 @@
+{
+  "name": "ps-slides slides",
+  "private": true,
+  "authors": [
+    "Gil Mizrahi <soupiral@gmail.com>"
+  ],
+  "license": "BSD3",
+  "version": "0.1.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-prelude": "latest",
+    "purescript-slides": "git://github.com/soupi/ps-slides.git"
+  }
+}

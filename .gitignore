@@ -3,7 +3,7 @@
 .psci
 .psci_modules
 output
-src/.webpack.js
+.webpack.js
 
 # Created by https://www.gitignore.io/api/vim,emacs,bower,node,osx
 

@@ -1,4 +1,4 @@
-ps-slides
+purescript-slides
 ---------
 
 A tiny EDSL for creating slides in PureScript using the OpticUI library.
@@ -8,7 +8,7 @@ A tiny EDSL for creating slides in PureScript using the OpticUI library.
 > - License: BSD3
 
 
-[Example](https://soupi.github.io/ps-slides), [Source](https://github.com/soupi/ps-slides/blob/master/src/Main.purs)
+[Example](https://soupi.github.io/purescript-slides), [Source](https://github.com/soupi/purescript-slides/blob/master/example/src/Main.purs)
 
 
 

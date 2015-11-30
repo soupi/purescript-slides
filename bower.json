@@ -1,5 +1,5 @@
 {
-  "name": "ps-slides",
+  "name": "purescript-slides",
   "authors": [
     "Gil Mizrahi <soupiral@gmail.com>"
   ],
@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/soupi/ps-slides"
+    "url": "git://github.com/soupi/purescript-slides"
   },
   "dependencies": {
     "purescript-foldable-traversable": "~0.4.1",
