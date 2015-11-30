@@ -1,5 +1,5 @@
 {
-  "name": "ps-slides slides",
+  "name": "purescript-slides slides",
   "private": true,
   "authors": [
     "Gil Mizrahi <soupiral@gmail.com>"
@@ -16,6 +16,6 @@
   ],
   "dependencies": {
     "purescript-prelude": "latest",
-    "purescript-slides": "git://github.com/soupi/ps-slides.git"
+    "purescript-slides": "./.."
   }
 }
