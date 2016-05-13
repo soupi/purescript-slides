@@ -1,10 +1,10 @@
 purescript-slides
 -----------------
 
-A tiny EDSL for creating slides in PureScript using the OpticUI library.
+A tiny EDSL for creating slides in PureScript using the Halogen library.
 
 
-> - Status: WIP
+> - Status: Experimental
 > - License: BSD3
 
 - [Module Documentation](docs/Slides.md)

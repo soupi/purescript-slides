@@ -2,6 +2,7 @@
 
 .psci
 .psci_modules
+.pulp-cache
 output
 .webpack.js
 

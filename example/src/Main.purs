@@ -46,10 +46,10 @@ s3 = slide "Combinators" $
 
 s4 = slide "Creating slides" $
   ulist
-  [ text "to create a slide, call the `slide` function with a title string and an element"
-  , text "to create slides, call the `mkSlides` function with a list of slides"
-  , text "to run the slides, call the `runSlides` function with the slides"
-  ]
+    [ text "to create a slide, call the `slide` function with a title string and an element"
+    , text "to create slides, call the `mkSlides` function with a list of slides"
+    , text "to run the slides, call the `runSlides` function with the slides"
+    ]
 
 s5 = slide "That's it!" $
   valign

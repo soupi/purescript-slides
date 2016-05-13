@@ -4,7 +4,7 @@
     "Gil Mizrahi <soupiral@gmail.com>"
   ],
   "license": "BSD3",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -18,10 +18,9 @@
     "url": "git://github.com/soupi/purescript-slides"
   },
   "dependencies": {
-    "purescript-foldable-traversable": "~0.4.1",
-    "purescript-maybe": "~0.3.4",
-    "purescript-optic-ui": "*",
-    "purescript-prelude": "~0.1.2",
-    "virtual-dom": "~2.1.1"
+    "purescript-prelude": "*",
+    "purescript-maybe": "*",
+    "purescript-foldable-traversable": "*",
+    "purescript-halogen": "*"
   }
 }
