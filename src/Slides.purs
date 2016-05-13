@@ -21,19 +21,24 @@ module Slides
   , ulist
   , group
   , center
+  , withClass
+  , withId
   ) where
 
 import Prelude
-import Data.Maybe (Maybe(..), fromMaybe)
-import Data.Foldable (intercalate)
 import Data.Array ((:), uncons, singleton, length, (!!))
+import Data.Foldable (intercalate)
+import Data.Maybe (Maybe(..), fromMaybe)
 import Control.Monad.Eff (Eff)
-import Halogen.Util (awaitBody, runHalogenAff)
+
+import Halogen.HTML (className) as H
+import Halogen.HTML.Properties (id_, class_) as H
+
 import Halogen (ComponentDSL, Natural, ComponentHTML, Component, HalogenEffects, component, modify, runUI)
-import Halogen.HTML.Core (HTML())
+import Halogen.Util (awaitBody, runHalogenAff)
+import Halogen.HTML.Indexed (HTML(Element), className, span, li_, ul_, img, text, p, a, h2_, span_, div, button) as Html
 import Halogen.HTML.Events.Indexed as Events
-import Halogen.HTML.Indexed (className, span, li_, ul_, img, text, p, a, h2_, span_, div, button) as Html
-import Halogen.HTML.Properties.Indexed (class_, id_, src, href) as Html
+import Halogen.HTML.Properties.Indexed (class_, src, href) as Html
 
 
 -- | run a component for a presentation
@@ -139,7 +144,7 @@ mkSlides sl = Slides { pos : 0, slides : sl }
 
 -- | Position an element at the center of its parent
 center :: Element -> Element
-center = Class "center"
+center = withClass "center" <<< group <<< singleton
 
 -- | Group elements as a unit
 group :: Array Element -> Element
@@ -189,7 +194,7 @@ halign = HAlign
 valign :: Array Element -> Element
 valign = VAlign
 
-renderSlides :: forall p i. Slide -> HTML p i
+renderSlides :: forall p i. Slide -> Html.HTML p i
 renderSlides (Slide el) =
   Html.div [ Html.class_ $ Html.className "slide" ] [renderE el]
 
@@ -223,10 +228,18 @@ renderE element =
       Html.span [] $ map renderE els
 
     Class c e ->
-      Html.span [Html.class_ $ Html.className c] [renderE e]
+      case renderE e of
+        Html.Element nm tn props els ->
+          Html.Element nm tn (props <> [ H.class_ $ H.className c ]) els
+        el ->
+          el
 
     Id i e ->
-      Html.span [Html.id_ i] [renderE e]
+      case renderE e of
+        Html.Element nm tn props els ->
+          Html.Element nm tn (props <> [ H.id_ i ]) els
+        el ->
+          el
 
 marwidStyle =
     [ Html.class_ $ Html.className "marwid" ]
