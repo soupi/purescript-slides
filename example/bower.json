@@ -4,7 +4,7 @@
   "authors": [
     "Gil Mizrahi <soupiral@gmail.com>"
   ],
-  "license": "BSD3",
+  "license": "BSD-3-Clause",
   "version": "0.2.0",
   "ignore": [
     "**/.*",

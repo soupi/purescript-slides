@@ -3,8 +3,12 @@
   "authors": [
     "Gil Mizrahi <soupiral@gmail.com>"
   ],
-  "license": "BSD3",
   "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/soupi/purescript-slides"
+  },
+  "license": "BSD-3-Clause",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -13,10 +17,6 @@
     "tests",
     "output"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/soupi/purescript-slides"
-  },
   "dependencies": {
     "purescript-prelude": "*",
     "purescript-maybe": "*",
