@@ -35,6 +35,7 @@ import Data.List.Zipper as Z
 import Control.Comonad (extract)
 import Data.Array ((:), uncons, singleton)
 import Data.List (List(..), length)
+import Data.Functor (($>))
 import Data.Foldable (foldr)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Control.Monad.Eff (Eff)
@@ -44,8 +45,10 @@ import Halogen.HTML.Properties (id_, class_) as H
 
 import Halogen (ComponentDSL, Natural, ComponentHTML, Component, HalogenEffects, component, modify, runUI)
 import Halogen.Util (awaitBody, runHalogenAff)
+import Halogen.Query (action)
 import Halogen.HTML.Indexed (HTML(Element), className, span, li_, ul_, img, text, p, a, h2_, span_, div, button) as Html
 import Halogen.HTML.Events.Indexed as Events
+import Halogen.HTML.Events.Handler as Events
 import Halogen.HTML.Properties.Indexed (class_, src, href) as Html
 
 
@@ -67,8 +70,8 @@ ui = component { render, eval }
   render :: Slides -> ComponentHTML Move
   render (Slides state) =
     Html.span []
-      [ Html.button [ Events.onClick (Events.input_ Back) ] [ Html.text "Back" ]
-      , Html.button [ Events.onClick (Events.input_ Next) ] [ Html.text "Next" ]
+      [ Html.button [ keyboardEvent, Events.onClick (Events.input_ Back) ] [ Html.text "Back" ]
+      , Html.button [ keyboardEvent, Events.onClick (Events.input_ Next) ] [ Html.text "Next" ]
       , Html.span
           [ Html.class_ $ Html.className "counter" ]
           [ Html.text $ show (position state + 1) <> " / " <> show (zipLength state) ]
@@ -79,6 +82,15 @@ ui = component { render, eval }
   eval move = do
     modify (\(Slides slides) -> Slides $ moveSlides move slides)
     pure (getNext move)
+
+  keyMapping = case _ of
+    35.0 -> Events.preventDefault $> map action (Just End) -- End key
+    36.0 -> Events.preventDefault $> map action (Just Start) -- Home key
+    37.0 -> Events.preventDefault $> map action (Just Back) -- Left Arrow key
+    39.0 -> Events.preventDefault $> map action (Just Next) -- Right Arrow key
+    _ -> pure Nothing
+
+  keyboardEvent = Events.onKeyPress \e -> keyMapping e.keyCode
 
 data Move a
   = Back a
