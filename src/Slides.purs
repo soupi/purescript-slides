@@ -23,11 +23,19 @@ module Slides
   , center
   , withClass
   , withId
+  , bold
+  , italics
+  , underline
+  , linethrough
   ) where
 
 import Prelude
-import Data.Array ((:), uncons, singleton, length, (!!))
-import Data.Foldable (intercalate)
+import Data.Generic (class Generic, gShow)
+import Data.List.Zipper as Z
+import Control.Comonad (extract)
+import Data.Array ((:), uncons, singleton)
+import Data.List (List(..), length)
+import Data.Foldable (foldr)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Control.Monad.Eff (Eff)
 
@@ -40,6 +48,10 @@ import Halogen.HTML.Indexed (HTML(Element), className, span, li_, ul_, img, text
 import Halogen.HTML.Events.Indexed as Events
 import Halogen.HTML.Properties.Indexed (class_, src, href) as Html
 
+
+-------------
+-- Running --
+-------------
 
 -- | run a component for a presentation
 runSlides :: Slides -> Eff (HalogenEffects ()) Unit
@@ -57,40 +69,59 @@ ui = component { render, eval }
     Html.span []
       [ Html.button [ Events.onClick (Events.input_ Back) ] [ Html.text "Back" ]
       , Html.button [ Events.onClick (Events.input_ Next) ] [ Html.text "Next" ]
-      , renderSlides $ fromMaybe empty (state.slides !! state.pos)
+      , Html.span
+          [ Html.class_ $ Html.className "counter" ]
+          [ Html.text $ show (position state + 1) <> " / " <> show (zipLength state) ]
+      , renderSlides (extract state)
       ]
 
   eval :: Natural Move (ComponentDSL Slides Move g)
-  eval move@(Next next) = do
+  eval move = do
     modify (\(Slides slides) -> Slides $ moveSlides move slides)
-    pure next
-  eval move@(Back next) = do
-    modify (\(Slides slides) -> Slides $ moveSlides move slides)
-    pure next
+    pure (getNext move)
 
+data Move a
+  = Back a
+  | Next a
+  | Start a
+  | End a
+
+getNext :: forall a. Move a -> a
+getNext = case _ of
+  Back a -> a
+  Next a -> a
+  Start a -> a
+  End a -> a
+
+moveSlides :: forall a. Move a -> SlidesInternal -> SlidesInternal
+moveSlides (Back _) slides =
+  fromMaybe slides (Z.up slides)
+
+moveSlides (Next _) slides =
+  fromMaybe slides (Z.down slides)
+
+moveSlides (Start _) slides =
+  Z.beginning slides
+
+moveSlides (End _) slides =
+  Z.end slides
+
+
+position :: forall a. Z.Zipper a -> Int
+position (Z.Zipper b _ _) = length b
+
+zipLength :: forall a. Z.Zipper a -> Int
+zipLength (Z.Zipper b _ a) = 1 + length b + length a
+
+-----------
+-- Model --
+-----------
 
 -- | Slides state for a component
 data Slides = Slides SlidesInternal
 
 type SlidesInternal
-  = { pos :: Int
-    , slides :: Array Slide
-    }
-
-data Move a
-  = Back a
-  | Next a
-
-moveSlides :: forall a. Move a -> SlidesInternal -> SlidesInternal
-moveSlides (Back _) s =
-  if s.pos - 1 < 0
-  then s
-  else s { pos = s.pos - 1 }
-moveSlides (Next _) s =
-  if s.pos + 1 >= length s.slides
-  then s
-  else s { pos = s.pos + 1 }
-
+  = Z.Zipper Slide
 
 -- | A single slide
 data Slide
@@ -110,6 +141,12 @@ data Element
   | Class String Element
   | Id    String Element
 
+derive instance genericElement :: Generic Element
+
+-- | A Show instance for testing
+instance showElement :: Show Element where
+  show = gShow
+
 instance semigroupElement :: Semigroup Element where
   append e1 e2 = Group [e1, e2]
 
@@ -120,43 +157,27 @@ appendPlus e1 e2 = e1 <> Class "padapp" Empty <> e2
 -- | Append two elements with some padding in between
 infixr 5 appendPlus as <+>
 
--- | A Show instance for testing
-instance showElement :: Show Element where
-  show =
-    case _ of
-      Text  str -> "Text " <> show str
-      Link  l e -> "Link " <> l <> " (" <> show e <> ")"
-      Title str -> "Title " <> show str
-      Image str -> "Image " <> show str
-      UList  xs -> "UList ["  <> intercalate ", " (map show xs) <> "]"
-      HAlign xs -> "HAlign [" <> intercalate ", " (map show xs) <> "]"
-      VAlign xs -> "VAlign [" <> intercalate ", " (map show xs) <> "]"
-      Group  xs -> "Group ["  <> intercalate ", " (map show xs) <> "]"
-      Class c e -> "Class "   <> show c <> " (" <> show e <> ")"
-      Id    i e -> "Id "      <> show i <> " (" <> show e <> ")"
-      Empty -> ""
+
+-----------
+-- Utils --
+-----------
 
 -- | Create slides component from an array of slides
 mkSlides :: Array Slide -> Slides
-mkSlides [] = Slides { pos : 0, slides : [empty] }
-mkSlides sl = Slides { pos : 0, slides : sl }
+mkSlides sl = case uncons sl of
+  Just {head, tail} ->
+    Slides $ Z.Zipper Nil head (foldr Cons Nil tail)
 
-
--- | Position an element at the center of its parent
-center :: Element -> Element
-center = withClass "center" <<< group <<< singleton
-
--- | Group elements as a unit
-group :: Array Element -> Element
-group = Group
-
--- | An empty slide
-empty :: Slide
-empty = Slide Empty
+  Nothing ->
+    Slides $ Z.Zipper Nil empty Nil
 
 -- | Create a slide from a title and an element
 slide :: String -> Element -> Slide
 slide ttl el = Slide (valign [title ttl, el])
+
+-- | An empty slide
+empty :: Slide
+empty = Slide Empty
 
 -- | A title
 title :: String -> Element
@@ -174,17 +195,9 @@ text = Text
 image :: String -> Element
 image = Image
 
--- | Add an Html class to an element
-withClass :: String -> Element -> Element
-withClass = Class
-
--- | Add an Html id to an element
-withId :: String -> Element -> Element
-withId = Id
-
--- | An unordered list of element from an array of elements
-ulist :: Array Element -> Element
-ulist = UList
+-- | Group elements as a unit
+group :: Array Element -> Element
+group = Group
 
 -- | Horizontally align elements in array
 halign :: Array Element -> Element
@@ -194,17 +207,55 @@ halign = HAlign
 valign :: Array Element -> Element
 valign = VAlign
 
+-- | An unordered list of element from an array of elements
+ulist :: Array Element -> Element
+ulist = UList
+
+-- | Add an Html class to an element
+withClass :: String -> Element -> Element
+withClass = Class
+
+-- | Add an Html id to an element
+withId :: String -> Element -> Element
+withId = Id
+
+-- | Position an element at the center of its parent
+center :: Element -> Element
+center = withClass "center" <<< group <<< singleton
+
+-- | Format text with bold in this element
+bold :: Element -> Element
+bold = withClass "boldEl" <<< group <<< singleton
+
+-- | Format text with italics in this element
+italics :: Element -> Element
+italics = withClass "italicsEl" <<< group <<< singleton
+
+-- | Format text with underline in this element
+underline :: Element -> Element
+underline = withClass "underlineEl" <<< group <<< singleton
+
+-- | Format text with linethrough in this element
+linethrough :: Element -> Element
+linethrough = withClass "linethroughEl" <<< group <<< singleton
+
+
+---------------
+-- Rendering --
+---------------
+
 renderSlides :: forall p i. Slide -> Html.HTML p i
 renderSlides (Slide el) =
-  Html.div [ Html.class_ $ Html.className "slide" ] [renderE el]
+  Html.div (giveClass "slide") [renderE el]
 
+renderE :: forall p i. Element -> Html.HTML p i
 renderE element =
   case element of
     Empty ->
       Html.span_ []
 
     Title tl ->
-      Html.span [ Html.class_ $ Html.className "title" ] [ Html.h2_ [ Html.text tl ] ]
+      Html.span (giveClass "title") [ Html.h2_ [ Html.text tl ] ]
 
     Link l el ->
       Html.a [ Html.href l ] [ renderE el ]
@@ -237,22 +288,21 @@ renderE element =
     Id i e ->
       case renderE e of
         Html.Element nm tn props els ->
-          Html.Element nm tn (props <> [ H.id_ i ]) els
+          Html.Element nm tn (props <> giveId i) els
         el ->
           el
 
-marwidStyle =
-    [ Html.class_ $ Html.className "marwid" ]
+giveClasses = map (Html.class_ <<< Html.className)
+giveClass = singleton <<< Html.class_ <<< Html.className
+giveId    = singleton <<< H.id_
 
-rowFlexStyle =
-    [ Html.class_ $ Html.className "rowflex" ]
+marwidStyle  = giveClass "marwid"
+rowFlexStyle = giveClass "rowflex"
+colFlexStyle = giveClass "colflex"
 
-colFlexStyle =
-    [ Html.class_ $ Html.className "colflex" ]
+block x = Html.span (giveClass "block") [ x ]
 
-block x =
-  Html.span [ Html.class_ $ Html.className "block" ] [ x ]
-
+applyRest :: forall a. (a -> a) -> Array a -> Array a
 applyRest f xs =
   case uncons xs of
     Nothing -> xs

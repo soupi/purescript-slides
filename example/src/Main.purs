@@ -1,6 +1,6 @@
 module Main where
 
-import Prelude (map, ($), (<>))
+import Prelude (($), (<>))
 import Slides
 
 main = runSlides slides
@@ -17,7 +17,7 @@ s1 = slide "Slides" $
         text "(In "
         <+> link "http://purescript.org" (text "PureScript")
         <>  text ", Using "
-        <+> link "https://github.com/soupi/ps-slides" (text "ps-slides")
+        <+> link "https://github.com/soupi/purescript-slides" (text "purescript-slides")
         <>  text ")"
     ]
 
@@ -54,7 +54,7 @@ s4 = slide "Creating slides" $
 s5 = slide "That's it!" $
   valign
     [ text "This library is still tiny and may grow in the future :)"
-    , center $ text "Interested? Check the source on" <+> link "https://github.com/soupi/ps-slides" (text "Github") <> text "!"
+    , center $ text "Interested? Check the source on" <+> link "https://github.com/soupi/purescript-slides" (text "Github") <> text "!"
     ]
 
 

@@ -84,8 +84,28 @@ a:hover {
   padding: 8px;
 }
 
+.counter {
+  margin: 10px;
+  font-size: initial;
+}
+
 .center {
   display: flex;
   margin: auto;
   justify-content: center;
 }
+
+
+.boldEl {
+  font-weight: bold;
+}
+.italicsEl {
+  font-style: italic;
+}
+.underlineEl {
+  text-decoration: underline;
+}
+.linethroughEl {
+  text-decoration: line-through;
+}
+
