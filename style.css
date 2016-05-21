@@ -97,15 +97,8 @@ a:hover {
 
 
 .boldEl {
-  font-weight: bold;
+  font-weight: bold !important;
 }
-.italicsEl {
-  font-style: italic;
+.italicEl {
+  font-style: italic !important;
 }
-.underlineEl {
-  text-decoration: underline;
-}
-.linethroughEl {
-  text-decoration: line-through;
-}
-

@@ -24,9 +24,7 @@ module Slides
   , withClass
   , withId
   , bold
-  , italics
-  , underline
-  , linethrough
+  , italic
   ) where
 
 import Prelude
@@ -239,17 +237,9 @@ center = withClass "center" <<< group <<< singleton
 bold :: Element -> Element
 bold = withClass "boldEl" <<< group <<< singleton
 
--- | Format text with italics in this element
-italics :: Element -> Element
-italics = withClass "italicsEl" <<< group <<< singleton
-
--- | Format text with underline in this element
-underline :: Element -> Element
-underline = withClass "underlineEl" <<< group <<< singleton
-
--- | Format text with linethrough in this element
-linethrough :: Element -> Element
-linethrough = withClass "linethroughEl" <<< group <<< singleton
+-- | Format text with italic in this element
+italic :: Element -> Element
+italic = withClass "italicEl" <<< group <<< singleton
 
 
 ---------------

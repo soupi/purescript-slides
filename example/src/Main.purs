@@ -30,6 +30,11 @@ s2 = slide "Primitives" $
         , text "title: a title"
         , text "link: turn an element into a clickable link"
         , text "center: center an element"
+        , text "bold/italic:"
+          <+> bold (text "bold")
+          <+> text "and"
+          <+> italic (text "italic")
+        , text "withClass/withId: add a class or id to element"
         ]
     ]
 
