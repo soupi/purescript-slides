@@ -28,26 +28,24 @@ module Slides
   ) where
 
 import Prelude
-import Data.Generic (class Generic, gShow)
 import Data.List.Zipper as Z
 import Control.Comonad (extract)
-import Data.Array ((:), uncons, singleton)
-import Data.List (List(..), length)
-import Data.Functor (($>))
-import Data.Foldable (foldr)
-import Data.Maybe (Maybe(..), fromMaybe)
 import Control.Monad.Eff (Eff)
-
+import Data.Array ((:), uncons, singleton)
+import Data.Foldable (foldr)
+import Data.Functor (($>))
+import Data.Generic (class Generic, gShow)
+import Data.List (List(..), length)
+import Data.Maybe (Maybe(..), fromMaybe)
+import Halogen (ComponentDSL, ComponentHTML, Component, HalogenEffects, component, modify, runUI)
 import Halogen.HTML (className) as H
-import Halogen.HTML.Properties (id_, class_) as H
-
-import Halogen (ComponentDSL, Natural, ComponentHTML, Component, HalogenEffects, component, modify, runUI)
-import Halogen.Util (awaitBody, runHalogenAff)
-import Halogen.Query (action)
+import Halogen.HTML.Events.Handler (preventDefault) as Events
+import Halogen.HTML.Events.Indexed (onKeyPress, input_, onClick) as Events
 import Halogen.HTML.Indexed (HTML(Element), className, span, li_, ul_, img, text, p, a, h2_, span_, div, button) as Html
-import Halogen.HTML.Events.Indexed as Events
-import Halogen.HTML.Events.Handler as Events
+import Halogen.HTML.Properties (id_, class_) as H
 import Halogen.HTML.Properties.Indexed (class_, src, href) as Html
+import Halogen.Query (action)
+import Halogen.Util (awaitBody, runHalogenAff)
 
 
 -------------
@@ -76,7 +74,7 @@ ui = component { render, eval }
       , renderSlides (extract state)
       ]
 
-  eval :: Natural Move (ComponentDSL Slides Move g)
+  eval :: Move ~> (ComponentDSL Slides Move g)
   eval move = do
     modify (\(Slides slides) -> Slides $ moveSlides move slides)
     pure (getNext move)
