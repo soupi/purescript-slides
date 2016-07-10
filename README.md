@@ -17,12 +17,12 @@ A tiny EDSL for creating slides in PureScript using the Halogen library.
 - [Module Documentation](https://pursuit.purescript.org/packages/purescript-slides/)
 - Example: [Code](example/src/Main.purs), [Demo](https://soupi.github.io/purescript-slides)
 
-To run the example on http://localhost:1337 run the following commands in the folder `example/`:
+To build the example run the following commands in the folder `example/`:
 
 ```sh
-pulp dep update
+bower install
 npm install virtual-dom
-pulp server
+pulp browserify --to app.js
 ```
 
 
