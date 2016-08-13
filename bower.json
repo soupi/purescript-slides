@@ -24,7 +24,8 @@
     "purescript-maybe": "^1.0.0",
     "purescript-control": "^1.0.0",
     "purescript-foldable-traversable": "^1.0.0",
-    "purescript-halogen": "^0.9.0"
+    "purescript-signal": "^6.1.0",
+    "purescript-smolder": "^4.0.1"
   },
   "resolutions": {
     "purescript-prelude": "^1.0.1",

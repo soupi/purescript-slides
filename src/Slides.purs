@@ -3,7 +3,6 @@
 module Slides
   ( runSlides
   , mkSlides
-  , ui
   , Move()
   , Slides()
   , Slide()
@@ -29,89 +28,75 @@ module Slides
 
 import Prelude
 import Data.List.Zipper as Z
+import Slides.Internal.Input as I
 import Control.Comonad (extract)
 import Control.Monad.Eff (Eff)
+import DOM (DOM)
 import Data.Array ((:), uncons, singleton)
-import Data.Foldable (foldr)
+import Data.Foldable (foldMap, fold, foldr)
 import Data.Functor (($>))
 import Data.Generic (class Generic, gShow)
 import Data.List (List(..), length)
 import Data.Maybe (Maybe(..), fromMaybe)
-import Halogen (ComponentDSL, ComponentHTML, Component, HalogenEffects, component, modify, runUI)
-import Halogen.HTML (className) as H
-import Halogen.HTML.Events.Handler (preventDefault) as Events
-import Halogen.HTML.Events.Indexed (onKeyPress, input_, onClick) as Events
-import Halogen.HTML.Indexed (HTML(Element), className, span, li_, ul_, img, text, p, a, h2_, span_, div, button) as Html
-import Halogen.HTML.Properties (id_, class_) as H
-import Halogen.HTML.Properties.Indexed (class_, src, href) as Html
-import Halogen.Query (action)
-import Halogen.Util (awaitBody, runHalogenAff)
-
+import Signal (foldp, runSignal) as S
+import Text.Smolder.HTML (p, div, img, a, h2, ul, li, span) as H
+import Text.Smolder.HTML.Attributes (className, id, src, href) as H
+import Text.Smolder.Markup (Markup, text) as H
+import Text.Smolder.Markup ((!))
+import Text.Smolder.Renderer.String (render) as H
 
 -------------
 -- Running --
 -------------
 
+
 -- | run a component for a presentation
-runSlides :: Slides -> Eff (HalogenEffects ()) Unit
-runSlides slides = runHalogenAff do
-  body <- awaitBody
-  runUI ui slides body
+runSlides :: forall e. Slides -> Eff ( dom :: DOM | e ) Unit
+runSlides (Slides slides) = do
+  inn <- I.input
+  let ui = S.foldp update slides inn
+  S.runSignal (setHtml <<< H.render <<< render <$> ui)
 
--- | Halogen UI component for a presentation
-ui :: forall g. Component Slides Move g
-ui = component { render, eval }
-  where
 
-  render :: Slides -> ComponentHTML Move
-  render (Slides state) =
-    Html.span []
-      [ Html.button [ keyboardEvent, Events.onClick (Events.input_ Back) ] [ Html.text "Back" ]
-      , Html.button [ keyboardEvent, Events.onClick (Events.input_ Next) ] [ Html.text "Next" ]
-      , Html.span
-          [ Html.class_ $ Html.className "counter" ]
-          [ Html.text $ show (position state + 1) <> " / " <> show (zipLength state) ]
-      , renderSlides (extract state)
-      ]
+-- Rendering
 
-  eval :: Move ~> (ComponentDSL Slides Move g)
-  eval move = do
-    modify (\(Slides slides) -> Slides $ moveSlides move slides)
-    pure (getNext move)
+render :: SlidesInternal -> H.Markup
+render slides =
+  H.div ! H.id "main" $ do
+    H.span ! H.className "counter" $
+      H.text $ show (position slides + 1) <> " / " <> show (zipLength slides)
+    renderSlides (extract slides)
 
-  keyMapping = case _ of
-    35.0 -> Events.preventDefault $> map action (Just End) -- End key
-    36.0 -> Events.preventDefault $> map action (Just Start) -- Home key
-    37.0 -> Events.preventDefault $> map action (Just Back) -- Left Arrow key
-    39.0 -> Events.preventDefault $> map action (Just Next) -- Right Arrow key
-    _ -> pure Nothing
+foreign import setHtml :: forall e. String -> Eff ( dom :: DOM | e ) Unit
 
-  keyboardEvent = Events.onKeyPress \e -> keyMapping e.keyCode
 
-data Move a
-  = Back a
-  | Next a
-  | Start a
-  | End a
+-- Update
 
-getNext :: forall a. Move a -> a
-getNext = case _ of
-  Back a -> a
-  Next a -> a
-  Start a -> a
-  End a -> a
+update :: I.Input -> SlidesInternal -> SlidesInternal
+update i slides
+  | I.clickOrHold (i.arrows.right) = moveSlides Next  slides
+  | I.clickOrHold (i.arrows.left)  = moveSlides Back  slides
+  | I.clickOrHold (i.arrows.down)  = moveSlides Start slides
+  | I.clickOrHold (i.arrows.up)    = moveSlides End   slides
+  | otherwise = slides
 
-moveSlides :: forall a. Move a -> SlidesInternal -> SlidesInternal
-moveSlides (Back _) slides =
+data Move
+  = Back
+  | Next
+  | Start
+  | End
+
+moveSlides :: Move -> SlidesInternal -> SlidesInternal
+moveSlides Back slides =
   fromMaybe slides (Z.up slides)
 
-moveSlides (Next _) slides =
+moveSlides Next slides =
   fromMaybe slides (Z.down slides)
 
-moveSlides (Start _) slides =
+moveSlides Start slides =
   Z.beginning slides
 
-moveSlides (End _) slides =
+moveSlides End slides =
   Z.end slides
 
 
@@ -244,66 +229,52 @@ italic = withClass "italicEl" <<< group <<< singleton
 -- Rendering --
 ---------------
 
-renderSlides :: forall p i. Slide -> Html.HTML p i
+renderSlides :: Slide -> H.Markup
 renderSlides (Slide el) =
-  Html.div (giveClass "slide") [renderE el]
+  H.div ! H.className "slide" $ renderE el
 
-renderE :: forall p i. Element -> Html.HTML p i
+renderE :: Element -> H.Markup
 renderE element =
   case element of
     Empty ->
-      Html.span_ []
+      H.span (H.text "")
 
     Title tl ->
-      Html.span (giveClass "title") [ Html.h2_ [ Html.text tl ] ]
+      H.span ! H.className "title" $ H.h2 (H.text tl)
 
     Link l el ->
-      Html.a [ Html.href l ] [ renderE el ]
+      H.a ! H.href l $ renderE el
 
     Text str ->
-      Html.p marwidStyle [ Html.text str ]
+      H.p ! H.className "marwid" $ H.text str
 
     Image url ->
-      Html.img (marwidStyle <> [ Html.src url ])
+      H.img ! H.className "marwid" ! H.src url
 
     VAlign els ->
-      Html.span colFlexStyle (applyRest block $ map renderE els)
+      H.span ! H.className "colflex" $ fold $ applyRest block $ map renderE els
 
     HAlign els ->
-      Html.span rowFlexStyle (map renderE els)
+      H.span ! H.className "rowflex" $ foldMap renderE els
 
     UList els ->
-      Html.span [] [ Html.ul_ $ map (Html.li_ <<< singleton <<< renderE) els ]
+      H.span $ H.ul $ foldMap (H.li <<< renderE) els
 
     Group els ->
-      Html.span [] $ map renderE els
+      H.span $ foldMap renderE els
 
     Class c e ->
-      case renderE e of
-        Html.Element nm tn props els ->
-          Html.Element nm tn (props <> [ H.class_ $ H.className c ]) els
-        el ->
-          el
+      renderE e ! H.className c
 
     Id i e ->
-      case renderE e of
-        Html.Element nm tn props els ->
-          Html.Element nm tn (props <> giveId i) els
-        el ->
-          el
+      renderE e ! H.id i
 
-giveClasses = map (Html.class_ <<< Html.className)
-giveClass = singleton <<< Html.class_ <<< Html.className
-giveId    = singleton <<< H.id_
-
-marwidStyle  = giveClass "marwid"
-rowFlexStyle = giveClass "rowflex"
-colFlexStyle = giveClass "colflex"
-
-block x = Html.span (giveClass "block") [ x ]
+block :: H.Markup -> H.Markup
+block = H.span ! H.className "block"
 
 applyRest :: forall a. (a -> a) -> Array a -> Array a
 applyRest f xs =
   case uncons xs of
     Nothing -> xs
     Just list -> list.head : map f list.tail
+
