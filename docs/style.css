@@ -102,3 +102,10 @@ a:hover {
 .italicEl {
   font-style: italic !important;
 }
+
+pre {
+    font-size: 1.6vw;
+    background-color: #f4f5f5;
+    padding-left: 15px;
+    padding-right: 15px;
+}

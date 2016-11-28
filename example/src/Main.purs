@@ -25,16 +25,17 @@ s2 = slide "Primitives" $
   valign
     [ text "We have the following primitives:"
     , ulist
-        [ text "text: write a block of text"
-        , text "image: display an image from a url"
-        , text "title: a title"
-        , text "link: turn an element into a clickable link"
-        , text "center: center an element"
-        , text "bold/italic:"
+        [ code "text" <+> text "- write a block of text"
+        , code "code" <+> text "- write a block of code"
+        , code "link" <+> text "- turn an element into a clickable link"
+        , code "image" <+> text "- display an image from a url"
+        , code "title" <+> text "- a title"
+        , code "center" <+> text "- center an element"
+        , code "bold"  <> text "/" <> code "italic" <+> text "-"
           <+> bold (text "bold")
           <+> text "and"
           <+> italic (text "italic")
-        , text "withClass/withId: add a class or id to element"
+        , code "withClass" <> text "/" <> code "withId" <+> text "- add a class or id to element"
         ]
     ]
 
@@ -42,18 +43,18 @@ s3 = slide "Combinators" $
   valign
     [ text "To combine elements, we can use the following combinators:"
     , center $ ulist
-        [ text "group: group an array of elements"
-        , text "valign: vertically align elements in a list"
-        , text "halign: horizontally align elements in a list"
-        , text "ulist: create a list of bullets"
+        [ code "valign" <+> text "- vertically align elements in a list"
+        , code "halign" <+> text "- horizontally align elements in a list"
+        , code "group" <+> text "- group an array of elements"
+        , code "ulist" <+> text "- create a list of bullets"
         ]
     ]
 
 s4 = slide "Creating slides" $
   ulist
-    [ text "to create a slide, call the `slide` function with a title string and an element"
-    , text "to create slides, call the `mkSlides` function with a list of slides"
-    , text "to run the slides, call the `runSlides` function with the slides"
+    [ text "to create a slide, call the" <+> code "slide" <+> text "function with a title string and an element"
+    , text "to create slides, call the" <+> code "mkSlides" <+> text "function with a list of slides"
+    , text "to run the slides, call the" <+> code "runSlides" <+> text "function with the slides"
     ]
 
 s5 = slide "That's it!" $

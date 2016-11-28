@@ -13,6 +13,7 @@ module Slides
   , empty
   , title
   , text
+  , code
   , image
   , link
   , valign
@@ -38,7 +39,7 @@ import Data.Generic (class Generic, gShow)
 import Data.List (List(..), length)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Signal (foldp, runSignal) as S
-import Text.Smolder.HTML (p, div, img, a, h2, ul, li, span) as H
+import Text.Smolder.HTML (p, div, img, a, h2, ul, li, span, pre) as H
 import Text.Smolder.HTML.Attributes (className, id, src, href) as H
 import Text.Smolder.Markup (Markup, text) as H
 import Text.Smolder.Markup ((!))
@@ -124,6 +125,7 @@ data Element
   = Empty
   | Title  String
   | Text   String
+  | Code   String
   | Image  String
   | Link   String Element
   | HAlign (Array Element)
@@ -187,6 +189,10 @@ text = Text
 image :: String -> Element
 image = Image
 
+-- | A <pre> element
+code :: String -> Element
+code = Code
+
 -- | Group elements as a unit
 group :: Array Element -> Element
 group = Group
@@ -246,6 +252,9 @@ renderE element =
 
     Text str ->
       H.p ! H.className "marwid" $ H.text str
+
+    Code c ->
+      H.pre ! H.className "marwid" $ H.text c
 
     Image url ->
       H.img ! H.className "marwid" ! H.src url

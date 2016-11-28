@@ -11636,9 +11636,9 @@ var Slides = require("../Slides");
 var Data_Function = require("../Data.Function");
 var Data_Semigroup = require("../Data.Semigroup");
 var s5 = Slides.slide("That's it!")(Slides.valign([ Slides.text("This library is still tiny and may grow in the future :)"), Slides.center(Slides.appendPlus(Slides.text("Interested? Check the source on"))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("https://github.com/soupi/purescript-slides")(Slides.text("Github")))(Slides.text("!")))) ]));
-var s4 = Slides.slide("Creating slides")(Slides.ulist([ Slides.text("to create a slide, call the `slide` function with a title string and an element"), Slides.text("to create slides, call the `mkSlides` function with a list of slides"), Slides.text("to run the slides, call the `runSlides` function with the slides") ]));
-var s3 = Slides.slide("Combinators")(Slides.valign([ Slides.text("To combine elements, we can use the following combinators:"), Slides.center(Slides.ulist([ Slides.text("group: group an array of elements"), Slides.text("valign: vertically align elements in a list"), Slides.text("halign: horizontally align elements in a list"), Slides.text("ulist: create a list of bullets") ])) ]));
-var s2 = Slides.slide("Primitives")(Slides.valign([ Slides.text("We have the following primitives:"), Slides.ulist([ Slides.text("text: write a block of text"), Slides.text("image: display an image from a url"), Slides.text("title: a title"), Slides.text("link: turn an element into a clickable link"), Slides.text("center: center an element"), Slides.appendPlus(Slides.text("bold/italic:"))(Slides.appendPlus(Slides.bold(Slides.text("bold")))(Slides.appendPlus(Slides.text("and"))(Slides.italic(Slides.text("italic"))))), Slides.text("withClass/withId: add a class or id to element") ]) ]));
+var s4 = Slides.slide("Creating slides")(Slides.ulist([ Slides.appendPlus(Slides.text("to create a slide, call the"))(Slides.appendPlus(Slides.code("slide"))(Slides.text("function with a title string and an element"))), Slides.appendPlus(Slides.text("to create slides, call the"))(Slides.appendPlus(Slides.code("mkSlides"))(Slides.text("function with a list of slides"))), Slides.appendPlus(Slides.text("to run the slides, call the"))(Slides.appendPlus(Slides.code("runSlides"))(Slides.text("function with the slides"))) ]));
+var s3 = Slides.slide("Combinators")(Slides.valign([ Slides.text("To combine elements, we can use the following combinators:"), Slides.center(Slides.ulist([ Slides.appendPlus(Slides.code("valign"))(Slides.text("- vertically align elements in a list")), Slides.appendPlus(Slides.code("halign"))(Slides.text("- horizontally align elements in a list")), Slides.appendPlus(Slides.code("group"))(Slides.text("- group an array of elements")), Slides.appendPlus(Slides.code("ulist"))(Slides.text("- create a list of bullets")) ])) ]));
+var s2 = Slides.slide("Primitives")(Slides.valign([ Slides.text("We have the following primitives:"), Slides.ulist([ Slides.appendPlus(Slides.code("text"))(Slides.text("- write a block of text")), Slides.appendPlus(Slides.code("code"))(Slides.text("- write a block of code")), Slides.appendPlus(Slides.code("link"))(Slides.text("- turn an element into a clickable link")), Slides.appendPlus(Slides.code("image"))(Slides.text("- display an image from a url")), Slides.appendPlus(Slides.code("title"))(Slides.text("- a title")), Slides.appendPlus(Slides.code("center"))(Slides.text("- center an element")), Data_Semigroup.append(Slides.semigroupElement)(Slides.code("bold"))(Data_Semigroup.append(Slides.semigroupElement)(Slides.text("/"))(Slides.appendPlus(Slides.code("italic"))(Slides.appendPlus(Slides.text("-"))(Slides.appendPlus(Slides.bold(Slides.text("bold")))(Slides.appendPlus(Slides.text("and"))(Slides.italic(Slides.text("italic")))))))), Data_Semigroup.append(Slides.semigroupElement)(Slides.code("withClass"))(Data_Semigroup.append(Slides.semigroupElement)(Slides.text("/"))(Slides.appendPlus(Slides.code("withId"))(Slides.text("- add a class or id to element")))) ]) ]));
 var s1 = Slides.slide("Slides")(Slides.valign([ Slides.image("http://i.imgur.com/Hm9pTxy.gif"), Slides.title("Let's build a presentation!"), Slides.center(Slides.appendPlus(Slides.text("(In "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("http://purescript.org")(Slides.text("PureScript")))(Slides.appendPlus(Slides.text(", Using "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("https://github.com/soupi/purescript-slides")(Slides.text("purescript-slides")))(Slides.text(")")))))) ]));
 var slides = Slides.mkSlides([ s1, s2, s3, s4, s5 ]);
 var main = Slides.runSlides(slides);
@@ -12476,7 +12476,7 @@ module.exports = {
 },{"../Control.Applicative":3,"../Control.Apply":5,"../Control.Bind":9,"../Control.Monad.Eff":19,"../DOM":28,"../Data.Eq":43,"../Data.Function":51,"../Data.Functor":54,"../Data.Semigroup":84,"../Data.Show":88,"../Prelude":111,"../Signal":117,"../Signal.DOM":113}],119:[function(require,module,exports){
 exports.setHtml = function(html) {
     return function() {
-	document.getElementById("main").outerHTML = html;
+        document.getElementById("main").outerHTML = html;
     }
 };
 
@@ -12563,6 +12563,15 @@ var Text = (function () {
         return new Text(value0);
     };
     return Text;
+})();
+var Code = (function () {
+    function Code(value0) {
+        this.value0 = value0;
+    };
+    Code.create = function (value0) {
+        return new Code(value0);
+    };
+    return Code;
 })();
 var Image = (function () {
     function Image(value0) {
@@ -12693,7 +12702,7 @@ var moveSlides = function (v) {
         if (v instanceof End) {
             return Data_List_Zipper.end(slides);
         };
-        throw new Error("Failed pattern match at Slides line 89, column 1 - line 90, column 33: " + [ v.constructor.name, slides.constructor.name ]);
+        throw new Error("Failed pattern match at Slides line 90, column 1 - line 91, column 33: " + [ v.constructor.name, slides.constructor.name ]);
     };
 };
 var update = function (i) {
@@ -12713,7 +12722,7 @@ var update = function (i) {
         if (Data_Boolean.otherwise) {
             return slides;
         };
-        throw new Error("Failed pattern match at Slides line 75, column 1 - line 80, column 23: " + [ i.constructor.name, slides.constructor.name ]);
+        throw new Error("Failed pattern match at Slides line 76, column 1 - line 81, column 23: " + [ i.constructor.name, slides.constructor.name ]);
     };
 };
 var link = Link.create;
@@ -12728,8 +12737,8 @@ var slide = function (ttl) {
     };
 };
 var group = Group.create;
-var italic = function ($121) {
-    return withClass("italicEl")(group(Data_Array.singleton($121)));
+var italic = function ($128) {
+    return withClass("italicEl")(group(Data_Array.singleton($128)));
 };
 var genericElement = new Data_Generic.Generic(function (v) {
     if (v instanceof Data_Generic.SProd && (v.value0 === "Slides.Empty" && v.value1.length === 0)) {
@@ -12740,6 +12749,9 @@ var genericElement = new Data_Generic.Generic(function (v) {
     };
     if (v instanceof Data_Generic.SProd && (v.value0 === "Slides.Text" && v.value1.length === 1)) {
         return Control_Apply.apply(Data_Maybe.applyMaybe)(new Data_Maybe.Just(Text.create))(Data_Generic.fromSpine(Data_Generic.genericString)(v.value1[0](Data_Unit.unit)));
+    };
+    if (v instanceof Data_Generic.SProd && (v.value0 === "Slides.Code" && v.value1.length === 1)) {
+        return Control_Apply.apply(Data_Maybe.applyMaybe)(new Data_Maybe.Just(Code.create))(Data_Generic.fromSpine(Data_Generic.genericString)(v.value1[0](Data_Unit.unit)));
     };
     if (v instanceof Data_Generic.SProd && (v.value0 === "Slides.Image" && v.value1.length === 1)) {
         return Control_Apply.apply(Data_Maybe.applyMaybe)(new Data_Maybe.Just(Image.create))(Data_Generic.fromSpine(Data_Generic.genericString)(v.value1[0](Data_Unit.unit)));
@@ -12777,6 +12789,11 @@ var genericElement = new Data_Generic.Generic(function (v) {
         } ]
     }, {
         sigConstructor: "Slides.Text", 
+        sigValues: [ function ($dollarq1) {
+            return Data_Generic.toSignature(Data_Generic.genericString)(Data_Generic.anyProxy);
+        } ]
+    }, {
+        sigConstructor: "Slides.Code", 
         sigValues: [ function ($dollarq1) {
             return Data_Generic.toSignature(Data_Generic.genericString)(Data_Generic.anyProxy);
         } ]
@@ -12841,6 +12858,11 @@ var genericElement = new Data_Generic.Generic(function (v) {
             return Data_Generic.toSpine(Data_Generic.genericString)(v.value0);
         } ]);
     };
+    if (v instanceof Code) {
+        return new Data_Generic.SProd("Slides.Code", [ function ($dollarq) {
+            return Data_Generic.toSpine(Data_Generic.genericString)(v.value0);
+        } ]);
+    };
     if (v instanceof Image) {
         return new Data_Generic.SProd("Slides.Image", [ function ($dollarq) {
             return Data_Generic.toSpine(Data_Generic.genericString)(v.value0);
@@ -12892,32 +12914,33 @@ var genericElement = new Data_Generic.Generic(function (v) {
 var showElement = new Data_Show.Show(Data_Generic.gShow(genericElement));
 var empty = new Slide(Empty.value);
 var mkSlides = function (sl) {
-    var $96 = Data_Array.uncons(sl);
-    if ($96 instanceof Data_Maybe.Just) {
-        return Slides.create(new Data_List_Zipper.Zipper(Data_List_Types.Nil.value, $96.value0.head, Data_Foldable.foldr(Data_Foldable.foldableArray)(Data_List_Types.Cons.create)(Data_List_Types.Nil.value)($96.value0.tail)));
+    var $102 = Data_Array.uncons(sl);
+    if ($102 instanceof Data_Maybe.Just) {
+        return Slides.create(new Data_List_Zipper.Zipper(Data_List_Types.Nil.value, $102.value0.head, Data_Foldable.foldr(Data_Foldable.foldableArray)(Data_List_Types.Cons.create)(Data_List_Types.Nil.value)($102.value0.tail)));
     };
-    if ($96 instanceof Data_Maybe.Nothing) {
+    if ($102 instanceof Data_Maybe.Nothing) {
         return Slides.create(new Data_List_Zipper.Zipper(Data_List_Types.Nil.value, empty, Data_List_Types.Nil.value));
     };
-    throw new Error("Failed pattern match at Slides line 159, column 15 - line 164, column 36: " + [ $96.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 161, column 15 - line 166, column 36: " + [ $102.constructor.name ]);
 };
-var center = function ($122) {
-    return withClass("center")(group(Data_Array.singleton($122)));
+var code = Code.create;
+var center = function ($129) {
+    return withClass("center")(group(Data_Array.singleton($129)));
 };
-var bold = function ($123) {
-    return withClass("boldEl")(group(Data_Array.singleton($123)));
+var bold = function ($130) {
+    return withClass("boldEl")(group(Data_Array.singleton($130)));
 };
 var block = Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.span)(Text_Smolder_HTML_Attributes.className("block"));
 var applyRest = function (f) {
     return function (xs) {
-        var $100 = Data_Array.uncons(xs);
-        if ($100 instanceof Data_Maybe.Nothing) {
+        var $106 = Data_Array.uncons(xs);
+        if ($106 instanceof Data_Maybe.Nothing) {
             return xs;
         };
-        if ($100 instanceof Data_Maybe.Just) {
-            return Data_Array.cons($100.value0.head)(Data_Functor.map(Data_Functor.functorArray)(f)($100.value0.tail));
+        if ($106 instanceof Data_Maybe.Just) {
+            return Data_Array.cons($106.value0.head)(Data_Functor.map(Data_Functor.functorArray)(f)($106.value0.tail));
         };
-        throw new Error("Failed pattern match at Slides line 276, column 3 - line 278, column 41: " + [ $100.constructor.name ]);
+        throw new Error("Failed pattern match at Slides line 285, column 3 - line 287, column 41: " + [ $106.constructor.name ]);
     };
 };
 var renderE = function (element) {
@@ -12933,6 +12956,9 @@ var renderE = function (element) {
     if (element instanceof Text) {
         return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.p)(Text_Smolder_HTML_Attributes.className("marwid"))(Text_Smolder_Markup.text(element.value0));
     };
+    if (element instanceof Code) {
+        return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.pre)(Text_Smolder_HTML_Attributes.className("marwid"))(Text_Smolder_Markup.text(element.value0));
+    };
     if (element instanceof Image) {
         return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupM)(Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupM)(Text_Smolder_HTML.img)(Text_Smolder_HTML_Attributes.className("marwid")))(Text_Smolder_HTML_Attributes.src(element.value0));
     };
@@ -12943,8 +12969,8 @@ var renderE = function (element) {
         return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.span)(Text_Smolder_HTML_Attributes.className("rowflex"))(Data_Foldable.foldMap(Data_Foldable.foldableArray)(Text_Smolder_Markup.monoidMarkup)(renderE)(element.value0));
     };
     if (element instanceof UList) {
-        return Text_Smolder_HTML.span(Text_Smolder_HTML.ul(Data_Foldable.foldMap(Data_Foldable.foldableArray)(Text_Smolder_Markup.monoidMarkup)(function ($124) {
-            return Text_Smolder_HTML.li(renderE($124));
+        return Text_Smolder_HTML.span(Text_Smolder_HTML.ul(Data_Foldable.foldMap(Data_Foldable.foldableArray)(Text_Smolder_Markup.monoidMarkup)(function ($131) {
+            return Text_Smolder_HTML.li(renderE($131));
         })(element.value0)));
     };
     if (element instanceof Group) {
@@ -12956,7 +12982,7 @@ var renderE = function (element) {
     if (element instanceof Id) {
         return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupM)(renderE(element.value1))(Text_Smolder_HTML_Attributes.id(element.value0));
     };
-    throw new Error("Failed pattern match at Slides line 237, column 3 - line 269, column 25: " + [ element.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 243, column 3 - line 278, column 25: " + [ element.constructor.name ]);
 };
 var renderSlides = function (v) {
     return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.div)(Text_Smolder_HTML_Attributes.className("slide"))(renderE(v.value0));
@@ -12970,8 +12996,8 @@ var runSlides = function (v) {
     return function __do() {
         var v1 = Slides_Internal_Input.input();
         var ui = Signal.foldp(update)(v.value0)(v1);
-        return Signal.runSignal(Data_Functor.map(Signal.functorSignal)(function ($125) {
-            return $foreign.setHtml(Text_Smolder_Renderer_String.render(render($125)));
+        return Signal.runSignal(Data_Functor.map(Signal.functorSignal)(function ($132) {
+            return $foreign.setHtml(Text_Smolder_Renderer_String.render(render($132)));
         })(ui))();
     };
 };
@@ -12984,6 +13010,7 @@ module.exports = {
     appendPlus: appendPlus, 
     bold: bold, 
     center: center, 
+    code: code, 
     empty: empty, 
     group: group, 
     halign: halign, 
