@@ -34,7 +34,6 @@ import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import Data.Array ((:), uncons, singleton)
 import Data.Foldable (foldMap, fold, foldr)
-import Data.Functor (($>))
 import Data.Generic (class Generic, gShow)
 import Data.List (List(..), length)
 import Data.Maybe (Maybe(..), fromMaybe)
@@ -60,7 +59,7 @@ runSlides (Slides slides) = do
 
 -- Rendering
 
-render :: SlidesInternal -> H.Markup
+render :: forall a. SlidesInternal -> H.Markup a
 render slides =
   H.div ! H.id "main" $ do
     H.span ! H.className "counter" $
@@ -229,11 +228,11 @@ italic = withClass "italicEl" <<< group <<< singleton
 -- Rendering --
 ---------------
 
-renderSlides :: Slide -> H.Markup
+renderSlides :: forall a. Slide -> H.Markup a
 renderSlides (Slide el) =
   H.div ! H.className "slide" $ renderE el
 
-renderE :: Element -> H.Markup
+renderE :: forall a. Element -> H.Markup a
 renderE element =
   case element of
     Empty ->
@@ -269,7 +268,7 @@ renderE element =
     Id i e ->
       renderE e ! H.id i
 
-block :: H.Markup -> H.Markup
+block :: forall a. H.Markup a -> H.Markup a
 block = H.span ! H.className "block"
 
 applyRest :: forall a. (a -> a) -> Array a -> Array a
