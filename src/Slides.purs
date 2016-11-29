@@ -2,8 +2,9 @@
 
 module Slides
   ( runSlides
+  , runSlidesWithMoves
   , mkSlides
-  , Move()
+  , Move(..)
   , Slides()
   , Slide()
   , Element()
@@ -29,6 +30,7 @@ module Slides
 
 import Prelude
 import Data.List.Zipper as Z
+import Signal (Signal)
 import Slides.Internal.Input as I
 import Control.Comonad (extract)
 import Control.Monad.Eff (Eff)
@@ -52,9 +54,16 @@ import Text.Smolder.Renderer.String (render) as H
 
 -- | run a component for a presentation
 runSlides :: forall e. Slides -> Eff ( dom :: DOM | e ) Unit
-runSlides (Slides slides) = do
+runSlides slides = do
   inn <- I.input
-  let ui = S.foldp update slides inn
+  runSlidesWithMoves (inputToMove <$> inn) slides
+
+-- | run a component for a presentation with a custom Move
+-- | Signal to determine when the slides should move and to which
+-- | Slide.
+runSlidesWithMoves :: forall e. Signal Move -> Slides -> Eff ( dom :: DOM | e ) Unit
+runSlidesWithMoves move (Slides slides) = do
+  let ui = S.foldp moveSlides slides move
   S.runSignal (setHtml <<< H.render <<< render <$> ui)
 
 
@@ -69,35 +78,52 @@ render slides =
 
 foreign import setHtml :: forall e. String -> Eff ( dom :: DOM | e ) Unit
 
-
--- Update
-
-update :: I.Input -> SlidesInternal -> SlidesInternal
-update i slides
-  | I.clickOrHold (i.arrows.right) = moveSlides Next  slides
-  | I.clickOrHold (i.arrows.left)  = moveSlides Back  slides
-  | I.clickOrHold (i.arrows.down)  = moveSlides Start slides
-  | I.clickOrHold (i.arrows.up)    = moveSlides End   slides
-  | otherwise = slides
-
+-- | Which way should the slides move:
+-- | - `Back`: Go back one slide. If at the beginning will do nothing
+-- | - `Next`: Go to next slide. If at the end will do nothing
+-- | - `Start`: Go to the start
+-- | - `End`: Go to the end
+-- | - `BackOrEnd`: Like `Back` but will wrap around
+-- | - `NextOrEnd`: Like `Next` but will wrap around
 data Move
   = Back
   | Next
   | Start
   | End
+  | BackOrEnd
+  | NextOrStart
+  | None
+
+inputToMove :: I.Input -> Move
+inputToMove i
+  | I.clickOrHold (i.arrows.right) = Next
+  | I.clickOrHold (i.arrows.left)  = Back
+  | I.clickOrHold (i.arrows.down)  = Start
+  | I.clickOrHold (i.arrows.up)    = End
+  | otherwise = None
 
 moveSlides :: Move -> SlidesInternal -> SlidesInternal
-moveSlides Back slides =
-  fromMaybe slides (Z.up slides)
+moveSlides m slides = case m of
+  NextOrStart ->
+    fromMaybe (moveSlides Start slides) (Z.up slides)
 
-moveSlides Next slides =
-  fromMaybe slides (Z.down slides)
+  BackOrEnd ->
+    fromMaybe (moveSlides End slides) (Z.up slides)
 
-moveSlides Start slides =
-  Z.beginning slides
+  Next ->
+    fromMaybe slides (Z.down slides)
 
-moveSlides End slides =
-  Z.end slides
+  Back ->
+    fromMaybe slides (Z.up slides)
+
+  Start ->
+    Z.beginning slides
+
+  End ->
+    Z.end slides
+
+  None ->
+    slides
 
 
 position :: forall a. Z.Zipper a -> Int
