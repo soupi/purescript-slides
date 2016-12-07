@@ -42,7 +42,7 @@ import Data.List (List(..), length)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Signal (foldp, runSignal) as S
 import Text.Smolder.HTML (p, div, img, a, h2, ul, li, span, pre) as H
-import Text.Smolder.HTML.Attributes (className, id, src, href) as H
+import Text.Smolder.HTML.Attributes (className, id, src, href, target) as H
 import Text.Smolder.Markup (Markup, text) as H
 import Text.Smolder.Markup ((!))
 import Text.Smolder.Renderer.String (render) as H
@@ -274,7 +274,7 @@ renderE element =
       H.span ! H.className "title" $ H.h2 (H.text tl)
 
     Link l el ->
-      H.a ! H.href l $ renderE el
+      H.a ! H.href l ! H.target "_top" $ renderE el
 
     Text str ->
       H.p ! H.className "marwid" $ H.text str
