@@ -37,7 +37,7 @@ import Control.Monad.Eff (Eff)
 import DOM (DOM)
 import Data.Array ((:), uncons, singleton)
 import Data.Foldable (foldMap, fold, foldr)
-import Data.Generic (class Generic, gShow)
+import Data.Generic (class Generic, gShow, gEq)
 import Data.List (List(..), length)
 import Data.Maybe (Maybe(..), fromMaybe)
 import Signal (foldp, runSignal) as S
@@ -93,6 +93,14 @@ data Move
   | BackOrEnd
   | NextOrStart
   | None
+
+derive instance genericMove :: Generic Move
+
+instance eqMove :: Eq Move where
+  eq = gEq
+
+instance showMove :: Show Move where
+  show = gShow
 
 inputToMove :: I.Input -> Move
 inputToMove i
