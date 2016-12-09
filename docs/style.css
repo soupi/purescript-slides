@@ -8,6 +8,10 @@ body {
   line-height: 1.5em;
 }
 
+pre {
+  font-size: 1vw !important;
+}
+
 h1, h2, h3 {
   color: #000;
 }
@@ -81,7 +85,7 @@ a:hover {
 }
 
 .padapp {
-  padding: 8px;
+  padding: 0.2vw;
 }
 
 .counter {
@@ -101,11 +105,4 @@ a:hover {
 }
 .italicEl {
   font-style: italic !important;
-}
-
-pre {
-    font-size: 1.6vw;
-    background-color: #f4f5f5;
-    padding-left: 15px;
-    padding-right: 15px;
 }

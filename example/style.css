@@ -8,6 +8,10 @@ body {
   line-height: 1.5em;
 }
 
+pre {
+  font-size: 1vw !important;
+}
+
 h1, h2, h3 {
   color: #000;
 }
@@ -81,7 +85,7 @@ a:hover {
 }
 
 .padapp {
-  padding: 1vw;
+  padding: 0.2vw;
 }
 
 .counter {
