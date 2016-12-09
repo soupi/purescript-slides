@@ -3,13 +3,46 @@ module Slides.Internal.Input where
 import Prelude
 import Control.Monad.Eff (Eff)
 import DOM (DOM)
-
+import Data.Int (toNumber)
+import Signal (map2, merge, sampleOn)
 import Signal (Signal, foldp) as S
+import Signal.DOM (Touch, DimensionPair, tap, touch, windowDimensions)
 import Signal.DOM (keyPressed) as S
+
+input :: forall e. Eff (dom :: DOM | e) (S.Signal Input)
+input = do
+  arrows <- arrowsSignal
+  taps   <- tapsSignal
+  pure $ S.foldp updateInput initInput (merge arrows taps)
+
+initInput :: Input
+initInput =
+  { arrows:
+      { right: Idle
+      , left: Idle
+      , down: Idle
+      , up: Idle
+      }
+  }
+
+updateInput :: Arrows Boolean -> Input -> Input
+updateInput arrI state =
+  { arrows: arrFold arrI state.arrows
+  }
+
+simpleUpdateInput :: Arrows Boolean -> Input -> Input
+simpleUpdateInput arr _ =
+    { arrows: { left: f arr.left, right: f arr.right, down: f arr.down, up: f arr.up } }
+  where f true = Click
+        f false = Idle
 
 type Input =
   { arrows :: Arrows BtnAction
   }
+
+showInput :: Input -> String
+showInput i = "Input\n  " <> showArrows i.arrows
+
 
 type Arrows a =
   { right :: a
@@ -28,7 +61,7 @@ clickOrHold :: BtnAction -> Boolean
 clickOrHold = case _ of
   Click -> true
   Hold  -> true
-  _       -> false
+  _     -> false
 
 instance showBtnAction :: Show BtnAction where
   show Idle = "Idle"
@@ -54,30 +87,6 @@ showArrows arrows =
   <> show arrows.up
   <> " "
   <> show arrows.right
-
-showInput :: Input -> String
-showInput i = "Input\n  " <> showArrows i.arrows
-
-input :: forall e. Eff (dom :: DOM | e) (S.Signal Input)
-input = do
-  arrows <- arrowsSignal
-  pure $
-    S.foldp updateInput initInput arrows
-
-initInput :: Input
-initInput =
-  { arrows:
-      { right: Idle
-      , left: Idle
-      , down: Idle
-      , up: Idle
-      }
-  }
-
-updateInput :: Arrows Boolean -> Input -> Input
-updateInput arrI state =
-  { arrows: arrFold arrI state.arrows
-  }
 
 arrFold :: Arrows Boolean -> Arrows BtnAction -> Arrows BtnAction
 arrFold inp arrows =
@@ -116,3 +125,23 @@ rightKeyCode = 39
 
 downKeyCode :: Int
 downKeyCode = 40
+
+tapsSignal :: forall e. Eff (dom :: DOM | e) (S.Signal (Arrows Boolean))
+tapsSignal = do
+  sig <- sampleOn <$> tap <*> (map2 { t: _, wd: _ } <$> touch <*> windowDimensions)
+  pure $ map touchToArrows sig
+
+touchToArrows :: { t :: Array Touch, wd :: DimensionPair } -> Arrows Boolean
+touchToArrows = case _ of
+  { t: [t], wd: wd }
+     | toNumber t.screenX / toNumber wd.w < 0.3 -> initArrBool { left = true }
+     | toNumber t.screenX / toNumber wd.w > 0.7 -> initArrBool { right = true }
+  _ -> initArrBool
+
+initArrBool :: Arrows Boolean
+initArrBool =
+  { left: false
+  , right: false
+  , up: false
+  , down: false
+  }
