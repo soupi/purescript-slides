@@ -6,14 +6,14 @@ import DOM (DOM)
 import Data.Int (toNumber)
 import Signal (map2, merge, sampleOn)
 import Signal (Signal, foldp) as S
-import Signal.DOM (Touch, DimensionPair, tap, touch, windowDimensions)
+import Signal.DOM (Touch, DimensionPair, touch, windowDimensions)
 import Signal.DOM (keyPressed) as S
 
 input :: forall e. Eff (dom :: DOM | e) (S.Signal Input)
 input = do
-  arrows <- arrowsSignal
-  taps   <- tapsSignal
-  pure $ S.foldp updateInput initInput (merge arrows taps)
+  arrows <- S.foldp updateInput initInput <$> arrowsSignal
+  taps   <- S.foldp simpleUpdateInput initInput <$> tapsSignal
+  pure $ merge arrows taps
 
 initInput :: Input
 initInput =
@@ -77,7 +77,7 @@ instance eqBtnAction :: Eq BtnAction where
   eq _ _ = false
 
 
-showArrows :: Arrows BtnAction -> String
+showArrows :: forall a. Show a => Arrows a -> String
 showArrows arrows =
   "Arrows "
   <> show arrows.left
@@ -128,7 +128,7 @@ downKeyCode = 40
 
 tapsSignal :: forall e. Eff (dom :: DOM | e) (S.Signal (Arrows Boolean))
 tapsSignal = do
-  sig <- sampleOn <$> tap <*> (map2 { t: _, wd: _ } <$> touch <*> windowDimensions)
+  sig <- sampleOn <$> touch <*> (map2 { t: _, wd: _ } <$> touch <*> windowDimensions)
   pure $ map touchToArrows sig
 
 touchToArrows :: { t :: Array Touch, wd :: DimensionPair } -> Arrows Boolean
