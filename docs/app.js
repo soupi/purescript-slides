@@ -11847,7 +11847,7 @@ var s5 = Slides.slide("That's it!")(Slides.valign([ Slides.text("This library is
 var s4 = Slides.slide("Creating slides")(Slides.ulist([ Slides.appendPlus(Slides.text("to create a slide, call the"))(Slides.appendPlus(Slides.code("slide"))(Slides.text("function with a title string and an element"))), Slides.appendPlus(Slides.text("to create slides, call the"))(Slides.appendPlus(Slides.code("mkSlides"))(Slides.text("function with a list of slides"))), Slides.appendPlus(Slides.text("to run the slides, call the"))(Slides.appendPlus(Slides.code("runSlides"))(Slides.text("function with the slides"))) ]));
 var s3 = Slides.slide("Combinators")(Slides.valign([ Slides.text("To combine elements, we can use the following combinators:"), Slides.center(Slides.ulist([ Slides.appendPlus(Slides.code("valign"))(Slides.text("- vertically align elements in a list")), Slides.appendPlus(Slides.code("halign"))(Slides.text("- horizontally align elements in a list")), Slides.appendPlus(Slides.code("group"))(Slides.text("- group an array of elements")), Slides.appendPlus(Slides.code("ulist"))(Slides.text("- create a list of bullets")) ])) ]));
 var s2 = Slides.slide("Primitives")(Slides.valign([ Slides.text("We have the following primitives:"), Slides.ulist([ Slides.appendPlus(Slides.code("text"))(Slides.text("- write a block of text")), Slides.appendPlus(Slides.code("code"))(Slides.text("- write a block of code")), Slides.appendPlus(Slides.code("link"))(Slides.text("- turn an element into a clickable link")), Slides.appendPlus(Slides.code("image"))(Slides.text("- display an image from a url")), Slides.appendPlus(Slides.code("title"))(Slides.text("- a title")), Slides.appendPlus(Slides.code("center"))(Slides.text("- center an element")), Data_Semigroup.append(Slides.semigroupElement)(Slides.code("bold"))(Data_Semigroup.append(Slides.semigroupElement)(Slides.text("/"))(Slides.appendPlus(Slides.code("italic"))(Slides.appendPlus(Slides.text("-"))(Slides.appendPlus(Slides.bold(Slides.text("bold")))(Slides.appendPlus(Slides.text("and"))(Slides.italic(Slides.text("italic")))))))), Data_Semigroup.append(Slides.semigroupElement)(Slides.code("withClass"))(Data_Semigroup.append(Slides.semigroupElement)(Slides.text("/"))(Slides.appendPlus(Slides.code("withId"))(Slides.text("- add a class or id to element")))) ]) ]));
-var s1 = Slides.slide("Slides")(Slides.valign([ Slides.image("http://i.imgur.com/Hm9pTxy.gif"), Slides.title("Let's build a presentation!"), Slides.center(Slides.appendPlus(Slides.text("(In "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("http://purescript.org")(Slides.text("PureScript")))(Slides.appendPlus(Slides.text(", Using "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("https://github.com/soupi/purescript-slides")(Slides.text("purescript-slides")))(Slides.text(")")))))) ]));
+var s1 = Slides.slide("Slides")(Slides.valign([ Slides.image("https://i.imgur.com/Hm9pTxy.gif"), Slides.title("Let's build a presentation!"), Slides.center(Slides.appendPlus(Slides.text("(In "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("http://purescript.org")(Slides.text("PureScript")))(Slides.appendPlus(Slides.text(", Using "))(Data_Semigroup.append(Slides.semigroupElement)(Slides.link("https://github.com/soupi/purescript-slides")(Slides.text("purescript-slides")))(Slides.text(")")))))) ]));
 var slides = Slides.mkSlides([ s1, s2, s3, s4, s5 ]);
 var main = Slides.runSlides(slides);
 module.exports = {
@@ -12697,11 +12697,13 @@ var showBtnAction = new Data_Show.Show(function (v) {
     };
     throw new Error("Failed pattern match at Slides.Internal.Input line 67, column 3 - line 68, column 3: " + [ v.constructor.name ]);
 });
-var showArrows = function (arrows) {
-    return "Arrows " + (Data_Show.show(showBtnAction)(arrows.left) + (" " + (Data_Show.show(showBtnAction)(arrows.down) + (" " + (Data_Show.show(showBtnAction)(arrows.up) + (" " + Data_Show.show(showBtnAction)(arrows.right)))))));
+var showArrows = function (dictShow) {
+    return function (arrows) {
+        return "Arrows " + (Data_Show.show(dictShow)(arrows.left) + (" " + (Data_Show.show(dictShow)(arrows.down) + (" " + (Data_Show.show(dictShow)(arrows.up) + (" " + Data_Show.show(dictShow)(arrows.right)))))));
+    };
 };
 var showInput = function (i) {
-    return "Input\n  " + showArrows(i.arrows);
+    return "Input\n  " + showArrows(showBtnAction)(i.arrows);
 };
 var rightKeyCode = 39;
 var leftKeyCode = 37;
@@ -12722,30 +12724,30 @@ var initArrBool = {
 var touchToArrows = function (v) {
     if (v.t.length === 1) {
         if (Data_Int.toNumber((v.t[0]).screenX) / Data_Int.toNumber(v.wd.w) < 0.3) {
-            var $25 = {};
-            for (var $26 in initArrBool) {
-                if (initArrBool.hasOwnProperty($26)) {
-                    $25[$26] = initArrBool[$26];
+            var $26 = {};
+            for (var $27 in initArrBool) {
+                if (initArrBool.hasOwnProperty($27)) {
+                    $26[$27] = initArrBool[$27];
                 };
             };
-            $25.left = true;
-            return $25;
+            $26.left = true;
+            return $26;
         };
         if (Data_Int.toNumber((v.t[0]).screenX) / Data_Int.toNumber(v.wd.w) > 0.7) {
-            var $28 = {};
-            for (var $29 in initArrBool) {
-                if (initArrBool.hasOwnProperty($29)) {
-                    $28[$29] = initArrBool[$29];
+            var $29 = {};
+            for (var $30 in initArrBool) {
+                if (initArrBool.hasOwnProperty($30)) {
+                    $29[$30] = initArrBool[$30];
                 };
             };
-            $28.right = true;
-            return $28;
+            $29.right = true;
+            return $29;
         };
     };
     return initArrBool;
 };
 var tapsSignal = function __do() {
-    var v = Control_Apply.apply(Control_Monad_Eff.applyEff)(Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.sampleOn)(Signal_DOM.tap))(Control_Apply.apply(Control_Monad_Eff.applyEff)(Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.map2(function (v) {
+    var v = Control_Apply.apply(Control_Monad_Eff.applyEff)(Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.sampleOn)(Signal_DOM.touch))(Control_Apply.apply(Control_Monad_Eff.applyEff)(Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.map2(function (v) {
         return function (v1) {
             return {
                 t: v, 
@@ -12837,9 +12839,9 @@ var updateInput = function (arrI) {
     };
 };
 var input = function __do() {
-    var v = arrowsSignal();
-    var v1 = tapsSignal();
-    return Signal.foldp(updateInput)(initInput)(Signal.merge(v)(v1));
+    var v = Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.foldp(updateInput)(initInput))(arrowsSignal)();
+    var v1 = Data_Functor.map(Control_Monad_Eff.functorEff)(Signal.foldp(simpleUpdateInput)(initInput))(tapsSignal)();
+    return Signal.merge(v)(v1);
 };
 module.exports = {
     Click: Click, 
@@ -13127,7 +13129,7 @@ var moveSlides = function (m) {
         if (m instanceof None) {
             return slides;
         };
-        throw new Error("Failed pattern match at Slides line 112, column 23 - line 132, column 11: " + [ m.constructor.name ]);
+        throw new Error("Failed pattern match at Slides line 114, column 23 - line 134, column 11: " + [ m.constructor.name ]);
     };
 };
 var link = Link.create;
@@ -13147,7 +13149,7 @@ var inputToMove = function (i) {
     if (Data_Boolean.otherwise) {
         return None.value;
     };
-    throw new Error("Failed pattern match at Slides line 104, column 1 - line 109, column 21: " + [ i.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 106, column 1 - line 111, column 21: " + [ i.constructor.name ]);
 };
 var image = Image.create;
 var halign = HAlign.create;
@@ -13231,7 +13233,7 @@ var genericMove = new Data_Generic.Generic(function (v) {
     if (v instanceof None) {
         return new Data_Generic.SProd("Slides.None", [  ]);
     };
-    throw new Error("Failed pattern match at Slides line 95, column 1 - line 95, column 44: " + [ v.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 97, column 1 - line 97, column 44: " + [ v.constructor.name ]);
 });
 var showMove = new Data_Show.Show(Data_Generic.gShow(genericMove));
 var genericElement = new Data_Generic.Generic(function (v) {
@@ -13416,7 +13418,7 @@ var mkSlides = function (sl) {
     if ($117 instanceof Data_Maybe.Nothing) {
         return Slides.create(new Data_List_Zipper.Zipper(Data_List_Types.Nil.value, empty, Data_List_Types.Nil.value));
     };
-    throw new Error("Failed pattern match at Slides line 193, column 15 - line 198, column 36: " + [ $117.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 195, column 15 - line 200, column 36: " + [ $117.constructor.name ]);
 };
 var code = Code.create;
 var center = function ($145) {
@@ -13435,7 +13437,7 @@ var applyRest = function (f) {
         if ($121 instanceof Data_Maybe.Just) {
             return Data_Array.cons($121.value0.head)(Data_Functor.map(Data_Functor.functorArray)(f)($121.value0.tail));
         };
-        throw new Error("Failed pattern match at Slides line 317, column 3 - line 319, column 41: " + [ $121.constructor.name ]);
+        throw new Error("Failed pattern match at Slides line 319, column 3 - line 321, column 41: " + [ $121.constructor.name ]);
     };
 };
 var renderE = function (element) {
@@ -13477,7 +13479,7 @@ var renderE = function (element) {
     if (element instanceof Id) {
         return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupM)(renderE(element.value1))(Text_Smolder_HTML_Attributes.id(element.value0));
     };
-    throw new Error("Failed pattern match at Slides line 275, column 3 - line 310, column 25: " + [ element.constructor.name ]);
+    throw new Error("Failed pattern match at Slides line 277, column 3 - line 312, column 25: " + [ element.constructor.name ]);
 };
 var renderSlides = function (v) {
     return Text_Smolder_Markup["with"](Text_Smolder_Markup.attributableMarkupMF)(Text_Smolder_HTML.div)(Text_Smolder_HTML_Attributes.className("slide"))(renderE(v.value0));

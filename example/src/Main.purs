@@ -11,7 +11,7 @@ slides = mkSlides [s1, s2, s3, s4, s5]
 
 s1 = slide "Slides" $
   valign
-    [ image "http://i.imgur.com/Hm9pTxy.gif"
+    [ image "https://i.imgur.com/Hm9pTxy.gif"
     , title "Let's build a presentation!"
     , center $
         text "(In "
