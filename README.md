@@ -8,11 +8,12 @@
 purescript-slides
 -----------------
 
-A tiny EDSL for creating slides in PureScript using the Halogen library.
+A tiny EDSL for creating slides in PureScript.
 
 
 > - Status: Experimental
 > - License: BSD3
+> - [Try It!](https://try.purescript.org/?backend=slides)
 
 - [Module Documentation](https://pursuit.purescript.org/packages/purescript-slides/)
 - Example: [Code](example/src/Main.purs), [Demo](https://soupi.github.io/purescript-slides)

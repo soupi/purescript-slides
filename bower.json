@@ -3,7 +3,7 @@
   "authors": [
     "Gil Mizrahi <soupiral@gmail.com>"
   ],
-  "version": "0.4.1",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/soupi/purescript-slides"
@@ -17,19 +17,16 @@
     "tests",
     "output"
   ],
-
   "dependencies": {
-
-    "purescript-prelude": "^2.1.0",
-    "purescript-generics": "^3.1.0",
-    "purescript-list-zipper": "git://github.com/soupi/purescript-list-zipper.git#d4f3730",
-    "purescript-maybe": "^2.0.1",
-    "purescript-control": "^2.0.0",
-    "purescript-foldable-traversable": "^2.0.0",
-    "purescript-signal": "^8.0.0",
-    "purescript-smolder": "^6.0.0"
+    "purescript-prelude": "^3.0.0",
+    "purescript-list-zipper": "git://github.com/soupi/purescript-list-zipper.git#7c618d0",
+    "purescript-maybe": "^3.0.0",
+    "purescript-control": "^3.0.0",
+    "purescript-foldable-traversable": "^3.0.0",
+    "purescript-signal": "^9.0.0",
+    "purescript-smolder": "^7.0.0"
   },
   "devDependencies": {
-    "purescript-psci-support": "^2.0.0"
+    "purescript-psci-support": "*"
   }
 }
